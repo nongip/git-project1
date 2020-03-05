@@ -2,8 +2,15 @@
 
 library(ggplot2)
 library(dplyr)
+library(mapproj)
 
-storms %>% group_by(time,month) %>% summarise(fakewind=mean(fakewind)) %>%
-        ggplot(aes(x=time,y=fakewind,color=month))+
-        geom_line()
-ggsave("storms.png",width = 7,height = 6)
+map<- map_data("world") %>%
+        filter(region!="USSR")
+ggplot(storms,aes(x=long,y=lat))+
+        geom_polygon(aes(group=group),fill="grey50",data=map)+
+        geom_path(aes(group=name),color="blue")+
+        facet_wrap(~year)+
+        theme_bw()+
+        coord_map(projection = "ortho",orientation = c(21,-60,0))
+
+ggsave("storms.png",width = 7,height = 5)
